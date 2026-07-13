@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 1089 Time-Warp Illusion</title>
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+    <style>
+        :root {
+            --purple-dark: #0f0c1b;
+            --purple-mid: #2c1654;
+            --purple-light: #6b3fa0;
+            --gold: #f39c12;
+            --gold-glow: #f1c40f;
+            --text-light: #e0d5f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, var(--purple-mid) 0%, var(--purple-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Star Elements */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+            background-size: 550px 550px, 350px 350px;
+            background-position: 0 0, 40px 60px;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold-glow);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* Main Layout Grid */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1rem 2rem 3rem;
+            width: 100%;
+            z-index: 1;
+            flex-grow: 1;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1.4fr 1fr;
+            }
+        }
+
+        /* Magic Workshop / Wizard Panels */
+        .magic-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(15, 12, 27, 0.6);
+            border: 2px solid var(--purple-light);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 0 25px rgba(107, 63, 160, 0.4);
+            backdrop-filter: blur(10px);
+            min-height: 400px;
+            position: relative;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step h2 {
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step p {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-note {
+            font-size: 0.95rem;
+            color: #a291b8;
+            border-left: 3px solid var(--gold);
+            padding-left: 10px;
+            margin-top: 1rem;
+        }
+
+        .btn-container {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        button.magic-btn {
+            background: linear-gradient(135deg, var(--purple-light), var(--purple-mid));
+            color: white;
+            border: 1px solid var(--gold);
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        button.magic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--gold-glow);
+            background: linear-gradient(135deg, #7e4cb9, var(--purple-light));
+        }
+
+        button.magic-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button.secondary-btn {
+            background: transparent;
+            border: 1px solid rgba(224, 213, 240, 0.3);
+            color: var(--text-light);
+        }
+        button.secondary-btn:hover {
+            background: rgba(255,255,255,0.05);
+            box-shadow: none;
+        }
+
+        /* Big Reveal Styling */
+        .reveal-box {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .reveal-number {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--gold-glow), 0 0 60px var(--gold);
+            margin: 1.5rem 0;
+            animation: pulse 2s infinite alternate;
+            letter-spacing: 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 40px var(--gold-glow), 0 0 80px var(--gold); }
+        }
+
+        /* Magical Calculator Styling */
+        .calc-container {
+            background: #181124;
+            border: 2px solid #3d245d;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            height: max-content;
+        }
+
+        .calc-title {
+            text-align: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #a291b8;
+            margin-bottom: 1rem;
+        }
+
+        .calc-screen {
+            background: #09060e;
+            border: 1px solid var(--purple-light);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 2rem;
+            text-align: right;
+            font-family: 'Courier New', Courier, monospace;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0,255,204,0.5);
+            min-height: 4rem;
+            word-wrap: break-word;
+            word-break: break-all;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            background: #251a36;
+            border: 1px solid #42305c;
+            color: white;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: #36264f;
+            border-color: var(--purple-light);
+        }
+
+        .calc-btn.operator {
+            color: var(--gold);
+            background: #2e1d42;
+        }
+        .calc-btn.operator:hover {
+            background: #41285e;
+        }
+
+        .calc-btn.clear {
+            color: #ff5555;
+        }
+
+        .calc-btn.equals {
+            background: linear-gradient(135deg, var(--purple-light), #8e44ad);
+            grid-column: span 2;
+        }
+        .calc-btn.equals:hover {
+            box-shadow: 0 0 10px rgba(107, 63, 160, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>The 1089 Time-Warp</h1>
+        <p>A mathematical anomaly woven into the fabric of time...</p>
+    </header>
+
+    <div class="container">
+        
+        <main class="magic-area">
+            
+            <div class="step active" id="step1">
+                <h2>🔮 Step 1: Manifest a Number</h2>
+                <p>Think of a <strong>three-digit number</strong> where the first and last digits are different by at least 2. (For example: 742 or 185).</p>
+                <p>Write it down, or punch it into your standard mystical focus crystal (the companion calculator on the right!).</p>
+                <div class="btn-container">
+                    <button class="magic-btn" onclick="nextStep(2)">I have my number →</button>
+                </div>
+            </div>
+
+            <div class="step" id="step2">
+                <h2>⏳ Step 2: The Chrono-Inversion</h2>
+                <p>Now, <strong>reverse</strong> that number. (For instance, if your number was 742, its mirror reflection is 247).</p>
+                <p>Subtract the smaller number from the larger one using the matrix calculator.</p>
+                <div class="step-note">Note: If your result is a 2-digit number (like 99), mentally place a zero at the front to keep the timeline stable (099).</div>
+                <div class="btn-container">
+                    <button class="magic-btn secondary-btn" onclick="nextStep(1)">← Back</button>
+                    <button class="magic-btn" onclick="nextStep(3)">Subtracted! Next →</button>
+                </div>
+            </div>
+
+            <div class="step" id="step3">
+                <h2>🌀 Step 3: The Final Reversal</h2>
+                <p>Take your shiny <strong>new result</strong>, and <strong>reverse it once more</strong>.</p>
+                <p>For example, if your subtraction left you with 495, its time-reversed copy is 594.</p>
+                <p>Now, <strong>add</strong> those two numbers together on the companion calculator.</p>
+                <div class="btn-container">
+                    <button class="magic-btn secondary-btn" onclick="nextStep(2)">← Back</button>
+                    <button class="magic-btn" onclick="nextStep(4)">Sum it up! Reveal Fate →</button>
+                </div>
+            </div>
+
+            <div class="step" id="step4">
+                <div class="reveal-box">
+                    <h2>✨ The Temporal Rift Reveals...</h2>
+                    <p>Through all cosmic variables, permutations, and choices, your calculations have converged onto a singular point in the space-time continuum:</p>
+                    <div class="reveal-number" id="finalResult">1089</div>
+                    <p>Mathematics is the truest magic. It was always written in the stars.</p>
+                    <div class="btn-container" style="justify-content: center;">
+                        <button class="magic-btn" onclick="resetTrick()">Warp Time Again 🔄</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <aside class="calc-container">
+            <div class="calc-title">Temporal Processor</div>
+            <div class="calc-screen" id="display">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="clearDisplay()">C</button>
+                <button class="calc-btn operator" onclick="appendOperator('/')">÷</button>
+                <button class="calc-btn operator" onclick="appendOperator('*')">×</button>
+                <button class="calc-btn operator" onclick="appendOperator('-')">−</button>
+                
+                <button class="calc-btn" onclick="appendNumber('7')">7</button>
+                <button class="calc-btn" onclick="appendNumber('8')">8</button>
+                <button class="calc-btn" onclick="appendNumber('9')">9</button>
+                <button class="calc-btn operator" onclick="appendOperator('+')">+</button>
+                
+                <button class="calc-btn" onclick="appendNumber('4')">4</button>
+                <button class="calc-btn" onclick="appendNumber('5')">5</button>
+                <button class="calc-btn" onclick="appendNumber('6')">6</button>
+                <button class="calc-btn operator" onclick="appendNumber('.')">.</button>
+                
+                <button class="calc-btn" onclick="appendNumber('1')">1</button>
+                <button class="calc-btn" onclick="appendNumber('2')">2</button>
+                <button class="calc-btn" onclick="appendNumber('3')">3</button>
+                <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                
+                <button class="calc-btn" style="grid-column: span 2;" onclick="appendNumber('0')">0</button>
+                <button class="calc-btn operator" style="grid-column: span 2;" onclick="reverseTrickHelper()">🔮 Auto-Flip</button>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        /* --- Wizard Magic Engine --- */
+        function nextStep(stepNumber) {
+            // Hide all steps
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show target step with subtle delay for smoother transition
+            setTimeout(() => {
+                const activeStep = document.getElementById(`step${stepNumber}`);
+                if (activeStep) {
+                    activeStep.classList.add('active');
+                }
+            }, 50);
+        }
+
+        function resetTrick() {
+            clearDisplay();
+            nextStep(1);
+        }
+
+
+        /* --- Companion Calculator Engine --- */
+        let displayValue = '0';
+        const displayElement = document.getElementById('display');
+
+        function updateDisplay() {
+            displayElement.innerText = displayValue;
+        }
+
+        function appendNumber(num) {
+            if (displayValue === '0' && num !== '.') {
+                displayValue = num;
+            } else {
+                displayValue += num;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            // Simple validation to check if last element isn't already an operator
+            const lastChar = displayValue.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) {
+                displayValue = displayValue.slice(0, -1) + op;
+            } else {
+                displayValue += op;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            updateDisplay();
+        }
+
+        function calculateResult() {
+            try {
+                // Safeguard evaluation (simple math string regex check could go here, eval used purely for sandbox calculator context)
+                let result = eval(displayValue);
+                // Handle floating precision nicely
+                if (result % 1 !== 0) {
+                    result = parseFloat(result.toFixed(4));
+                }
+                displayValue = result.toString();
+            } catch (error) {
+                displayValue = "Error";
+            }
+            updateDisplay();
+        }
+
+        /* Magical Assistant Utility: Reverses whatever number is on the screen */
+        function reverseTrickHelper() {
+            // Strip non-numbers out just in case
+            let currentNum = displayValue.replace(/[^0-9]/g, '');
+            if (!currentNum) return;
+            
+            let reversed = currentNum.split('').reverse().join('');
+            
+            // Format to 3 digits standard if user hit a step 2 scenario (e.g. 99 -> 099)
+            if (currentNum.length === 2 && currentNum === "99") {
+                displayValue = "099 (Reversed: 990)";
+                updateDisplay();
+                return;
+            }
+
+            displayValue = reversed;
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
